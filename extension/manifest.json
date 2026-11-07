@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "Pause \u2014 Scroll on purpose",
+  "version": "0.4.0",
+  "description": "Tracks Shorts/Reels and YouTube, shows time remaining on demand, then blocks the feed with a personalized break idea and an intentional-dismiss challenge.",
+  "permissions": [
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://www.youtube.com/*",
+    "https://www.instagram.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://www.instagram.com/*"
+      ],
+      "js": [
+        "seed.js",
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Pause",
+    "default_icon": {
+      "16": "icon16.png",
+      "32": "icon32.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

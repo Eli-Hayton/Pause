@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Set up Pause</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="setup-page">
+  <nav class="nav shell">
+    <a class="brand" href="/"><span class="brand-mark"><span></span><span></span></span><span>pause</span></a>
+    <div class="nav-links"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">◐</button><a class="text-link" href="/demo">Demo</a><a class="text-link" href="/">← back home</a></div>
+  </nav>
+
+  <main class="setup-page-shell shell">
+    <section class="setup-intro compact-intro">
+      <span class="eyebrow"><span class="live-dot"></span> AI-guided setup</span>
+      <h1>Build a break that fits you.</h1>
+      <p>Nothing is pre-selected. Tell Pause what your scrolling actually looks like, then AI will build a varied activity pool and extension settings around your answers.</p>
+    </section>
+
+    <div class="conversation-layout">
+      <aside class="ai-guide-card">
+        <div class="ai-avatar">✦</div>
+        <span class="soft-label">Pause AI</span>
+        <h2>Give me context, not perfect answers.</h2>
+        <p>The goal is variety: some ideas can connect to things you like, but the list should not just repeat your hobbies back at you.</p>
+        <div class="chat-example">
+          <div class="bubble ai">What does a good short break feel like to you?</div>
+          <div class="bubble human">Something easy that gets me off the feed without turning into another big task.</div>
+          <div class="bubble ai">Got it. I’ll keep the ideas small, realistic, and varied.</div>
+        </div>
+      </aside>
+
+      <form id="setupAiForm" class="setup-card conversational-form" method="post" action="{{ url_for('plan') }}">
+        {% if error %}<div class="error">{{ error }}</div>{% endif %}
+        <div class="step-label">Nothing is chosen for you — fill in what actually fits.</div>
+
+        <fieldset>
+          <legend>1. Where do you want Pause to help?</legend>
+          <div class="choice-row">
+            <label class="choice"><input type="checkbox" name="apps" value="YouTube"><span>YouTube</span></label>
+            <label class="choice"><input type="checkbox" name="apps" value="Instagram"><span>Instagram</span></label>
+          </div>
+          <p class="helper-copy">Choose at least one.</p>
+        </fieldset>
+
+        <label class="field-label" for="trigger">2. What usually causes you to start scrolling?</label>
+        <select id="trigger" name="trigger" required>
+          <option value="" selected disabled>Choose what fits best…</option>
+          <option value="a short break while working">A short break while working</option>
+          <option value="stress and wanting to unwind">Stress / wanting to unwind</option>
+          <option value="boredom">Boredom</option>
+          <option value="following a topic I care about">A topic I care about</option>
+          <option value="habit / opening it without thinking">Habit / opening it without thinking</option>
+        </select>
+
+        <label class="field-label" for="situation">3. What are you usually doing right before you start?</label>
+        <textarea id="situation" name="situation" rows="2" required placeholder="Example: studying at my desk, winding down before bed, waiting between classes…"></textarea>
+
+        <label class="field-label" for="interests">4. What kinds of things do you enjoy away from scrolling?</label>
+        <textarea id="interests" name="interests" rows="4" required placeholder="Example: creative stuff, games, music, talking with people, reading, making things…"></textarea>
+        <p class="helper-copy">These are inspiration, not a script. Pause will use some of them, but it will also generate other realistic break ideas so the list does not hyper-focus on one hobby.</p>
+
+        <label class="field-label" for="energy">5. How much energy should a suggested break require?</label>
+        <select id="energy" name="energy" required>
+          <option value="" selected disabled>Choose a break energy level…</option>
+          <option value="very low">Very low — I want something almost effortless</option>
+          <option value="low to medium">Low to medium — a small task is fine</option>
+          <option value="medium to active">Medium / active — I am okay moving around or doing something involved</option>
+        </select>
+        <p class="helper-copy">This controls the activities themselves — not how hard the CAPTCHA is.</p>
+
+        <label class="field-label" for="friction">6. How much effort should it take to get extra scrolling time?</label>
+        <select id="friction" name="friction" required>
+          <option value="" selected disabled>Choose intent-check difficulty…</option>
+          <option value="light">Light — a quick check</option>
+          <option value="medium">Medium — enough friction to interrupt autopilot</option>
+          <option value="strong">Strong — make me work for the snooze</option>
+        </select>
+        <p class="helper-copy">This directly controls how difficult the extension's CAPTCHA / mini-puzzle can be.</p>
+
+        <div class="two-col">
+          <label><span class="field-label">7. Shorts / Reels limit</span><div class="input-suffix"><input type="number" name="short_limit" min="1" max="60" required placeholder="e.g. 5"><span>min</span></div></label>
+          <label><span class="field-label">Long YouTube limit</span><div class="input-suffix"><input type="number" name="long_limit" min="5" max="240" required placeholder="e.g. 45"><span>min</span></div></label>
+        </div>
+        <p class="helper-copy timer-helper">No preset limit — choose the amount of time you actually want.</p>
+
+        <label class="field-label" for="goal">8. What do you want to be different?</label>
+        <textarea id="goal" name="goal" rows="3" required placeholder="Example: I want short breaks to stay short so I can get back to what I was doing."></textarea>
+
+        <button class="button button-primary submit-button" type="submit">Create my Pause setup <span>✦</span></button>
+        <p class="privacy-note">The AI uses these answers to generate your list. Extension timing and saved ideas stay in your browser.</p>
+      </form>
+    </div>
+  </main>
+
+  <div class="ai-thinking-overlay" id="aiThinkingOverlay" aria-hidden="true">
+    <div class="ai-thinking-card" role="status" aria-live="polite">
+      <div class="ai-thinking-mark">✦</div><span class="soft-label">Pause AI</span><h2>Building your setup</h2>
+      <div class="thinking-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p id="thinkingStatus">Reading your scrolling context…</p><small>This usually takes a few seconds. The page is still working.</small>
+    </div>
+  </div>
+
+  <script>
+    const form=document.getElementById('setupAiForm'), overlay=document.getElementById('aiThinkingOverlay'), status=document.getElementById('thinkingStatus');
+    const messages=['Reading your scrolling context…','Balancing your interests with a wider mix of ideas…','Checking that each activity actually fits its time estimate…','Finishing your personalized extension setup…'];
+    let thinkingTimer;
+    form.addEventListener('submit',(event)=>{
+      if(!form.querySelector('input[name="apps"]:checked')){event.preventDefault();alert('Choose YouTube, Instagram, or both.');return;}
+      overlay.classList.add('is-visible'); overlay.setAttribute('aria-hidden','false');
+      const b=form.querySelector('button[type="submit"]'); if(b){b.disabled=true;b.textContent='Pause AI is thinking…';}
+      let i=0; thinkingTimer=setInterval(()=>{i=(i+1)%messages.length;status.textContent=messages[i];},1500);
+    });
+    window.addEventListener('pageshow',()=>{clearInterval(thinkingTimer);overlay.classList.remove('is-visible');overlay.setAttribute('aria-hidden','true');const b=form.querySelector('button[type="submit"]');if(b){b.disabled=false;b.innerHTML='Create my Pause setup <span>✦</span>';}});
+  </script>
+<script src="{{ url_for('static', filename='theme.js') }}"></script></body>
+</html>

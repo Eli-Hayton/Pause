@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Travel Recommendation</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  </head>
+  <body class="bg-light">
+    <main class="container mt-5">
+      <section class="card shadow-sm">
+        <header class="card-header text-center bg-primary text-white">
+          <h1 class="h3 mb-0">Your Travel Recommendation</h1>
+        </header>
+        {% if image %}
+          <img
+            class="card-img-top"
+            src="{{ image }}"
+            alt="Black-and-white cartoon travel illustration for {{ destination|truncate(120, true) }}"
+            style="height: min(42vw, 420px); min-height: 220px; object-fit: cover"
+          />
+        {% elif image_error %}
+          <div class="alert alert-warning m-3" role="alert">{{ image_error }}</div>
+        {% endif %}
+        <div class="card-body">
+          <p class="text-muted">
+            {% if country|lower != 'any' %}Country: {{ country }}{% endif %}
+            {% if start_date and end_date %} | {{ start_date }} to {{ end_date }}{% endif %}
+          </p>
+          <p class="card-text" style="white-space: pre-line">{{ destination }}</p>
+          <a href="{{ url_for('index') }}" class="btn btn-primary">Plan another trip</a>
+        </div>
+      </section>
+    </main>
+  <script src="{{ url_for('static', filename='theme.js') }}"></script></body>
+</html>

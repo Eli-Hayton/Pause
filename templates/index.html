@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f4f2ed" />
+  <title>Pause — Scroll on purpose</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <nav class="nav shell">
+    <a class="brand" href="/" aria-label="Pause home">
+      <span class="brand-mark"><span></span><span></span></span>
+      <span>pause</span>
+    </a>
+    <div class="nav-links"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">◐</button>
+      <a href="#how">How it works</a>
+      <a href="/demo">Demo</a>
+      <a href="/setup">Set up</a>
+      <a class="button button-small button-ghost" href="{{ url_for('download_extension') }}">Get extension</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero shell">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="live-dot"></span> a calmer internet habit</div>
+        <h1>Keep the break.<br><em>Lose the spiral.</em></h1>
+        <p class="hero-lede">Pause notices when a quick scroll quietly becomes a longer one, then gives you a gentle chance to choose what happens next.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="/setup">Set up Pause <span>↗</span></a>
+          <a class="text-link" href="#how">See how it works ↓</a>
+        </div>
+        <div class="proof-row">
+          <div><strong>5 min</strong><span>breaks stay visible</span></div>
+          <div><strong>No locks</strong><span>you stay in control</span></div>
+          <div><strong>Private</strong><span>settings stay local</span></div>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-label="Example Pause notification">
+        <div class="browser-card">
+          <div class="browser-top"><span></span><span></span><span></span><div class="fake-url">youtube.com/shorts</div></div>
+          <div class="feed-sim">
+            <div class="feed-label">Shorts</div>
+            <div class="video-shape"><div class="video-face">:)</div></div>
+            <div class="pause-popover">
+              <div class="mini-logo"><span></span><span></span></div>
+              <div class="popover-copy">
+                <span class="soft-label">5 minute check-in</span>
+                <h3>Still choosing this?</h3>
+                <p>Your quick break has been going for 7 minutes.</p>
+                <div class="popover-actions"><button>Wrap it up</button><button class="continue">Keep watching</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="float-note note-one">fresh check after every snooze <span>✓</span></div>
+        <div class="float-note note-two">made for “just 5 mins”</div>
+      </div>
+    </section>
+
+    <section id="how" class="how shell">
+      <div class="section-heading">
+        <span class="kicker">Designed around real habits</span>
+        <h2>Interrupt autopilot, not the internet.</h2>
+        <p>People told us they usually open feeds to relax, take a short assignment break, or follow something they actually care about. The problem starts when intentional time turns invisible.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card accent-card">
+          <span class="number">01</span>
+          <div class="feature-icon">◷</div>
+          <h3>Notice the drift</h3>
+          <p>Pause tracks time on YouTube Shorts and Instagram Reels while the tab is actually visible.</p>
+        </article>
+        <article class="feature-card">
+          <span class="number">02</span>
+          <div class="feature-icon">◎</div>
+          <h3>Give you a choice</h3>
+          <p>A full-screen check-in interrupts the feed. One CAPTCHA-gated snooze is available per session, then the blocker stays.</p>
+        </article>
+        <article class="feature-card dark-card">
+          <span class="number">03</span>
+          <div class="feature-icon">✦</div>
+          <h3>Catch long-form too</h3>
+          <p>Because losing track of time isn’t only about Shorts, optional long-video reminders can nudge you after a longer session.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="setup-teaser-wrap"><div class="setup-teaser shell"><div><span class="kicker">AI-guided setup</span><h2>The setup is its own conversation now.</h2><p>Tell Pause what pulls you into scrolling, what you actually enjoy doing instead, and how much effort you want to spend on a break. The AI turns that into your timer, your check-in message, and a personalized list of replacement activities.</p></div><a class="button button-primary" href="/setup">Start setup <span>✦</span></a></div></section>
+  </main>
+<script src="{{ url_for('static', filename='theme.js') }}"></script></body>
+</html>

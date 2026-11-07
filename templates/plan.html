@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Pause setup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="plan-page">
+  <nav class="nav shell compact-plan-nav"><a class="brand" href="/"><span class="brand-mark"><span></span><span></span></span><span>pause</span></a><div class="nav-links"><button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">◐</button><a href="/demo">Install + demo</a><a class="text-link" href="/setup">← edit setup</a></div></nav>
+  <main class="plan-shell shell plan-shell-tight">
+    <section class="plan-intro compact-plan-intro">
+      <span class="eyebrow"><span class="live-dot"></span> built with Pause AI</span>
+      <h1>{{ plan.headline }}</h1><p>{{ plan.summary }}</p>
+      {% if ai_error %}<div class="error soft-error">{{ ai_error }}</div>{% endif %}
+      <a class="scroll-cue" href="#refine">Update the ideas with AI ↓</a>
+    </section>
+
+    <section id="refine" class="refine-card chat-refine-card top-refine-card">
+      <div class="chat-refine-heading">
+        <span class="kicker">Update your list</span><h2>Tell the AI what it got wrong.</h2>
+        <p>Your new message is treated as new information about you. Pause will rebuild the list instead of just rephrasing the same ideas.</p>
+        <div class="chat-hint-row">
+          <button type="button" class="chat-hint" data-message="Make the activities shorter and easier to finish in the listed time.">More realistic timing</button>
+          <button type="button" class="chat-hint" data-message="Use my hobbies less. Give me a wider variety of break ideas.">More variety</button>
+          <button type="button" class="chat-hint" data-message="Give me ideas I can do without leaving my desk.">Desk only</button>
+        </div>
+      </div>
+      <div class="refine-chat-panel">
+        <div class="refine-chat-log" id="refineChatLog" aria-live="polite">
+          <div class="chat-turn assistant-turn"><div class="chat-turn-avatar">✦</div><div class="chat-turn-body"><span>Pause AI</span><p>{% if chat_history %}I’m using your latest feedback to change the list. What else should I learn about you?{% else %}I made a first pass. Tell me what feels repetitive, unrealistic, or just not you.{% endif %}</p></div></div>
+          {% for turn in chat_history %}<div class="chat-turn {{ 'user-turn' if turn.role == 'user' else 'assistant-turn' }}"><div class="chat-turn-avatar">{{ 'You' if turn.role == 'user' else '✦' }}</div><div class="chat-turn-body"><span>{{ 'You' if turn.role == 'user' else 'Pause AI' }}</span><p>{{ turn.content }}</p></div></div>{% endfor %}
+        </div>
+        <form id="refineAiForm" class="refine-chat-form" method="post" action="{{ url_for('plan') }}">
+          {% for app in apps %}<input type="hidden" name="apps" value="{{ app }}">{% endfor %}
+          <input type="hidden" name="trigger" value="{{ trigger }}"><input type="hidden" name="short_limit" value="{{ short_limit }}"><input type="hidden" name="long_limit" value="{{ long_limit }}">
+          <input type="hidden" name="goal" value="{{ goal }}"><input type="hidden" name="interests" value="{{ interests }}"><input type="hidden" name="situation" value="{{ situation }}"><input type="hidden" name="energy" value="{{ energy }}"><input type="hidden" name="friction" value="{{ friction }}">
+          <input type="hidden" name="chat_history" value='{{ chat_history_json|e }}'><input type="hidden" name="previous_ideas" value='{{ ideas_json|e }}'>
+          <textarea id="feedbackBox" name="feedback" rows="2" required placeholder="Example: I like coding, but I don't want half the list to be about coding. I also like quick social or creative breaks."></textarea>
+          <div class="chat-send-row"><span>This will regenerate the full list below.</span><button class="button button-primary" type="submit">Update ideas <span>↑</span></button></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="install-callout">
+      <div><span class="kicker">1 download · Chrome + Edge</span><h2>When the list looks right, install it.</h2><p>This download packages your timer, CAPTCHA difficulty, and current 30-item list into the extension.</p></div>
+      <form id="personalizedDownloadForm" method="post" action="{{ url_for('download_personalized_extension') }}">
+        <input type="hidden" name="short_limit" value="{{ short_limit }}"><input type="hidden" name="long_limit" value="{{ long_limit }}"><input type="hidden" name="friction" value="{{ friction }}">
+        <input type="hidden" name="youtube" value="{{ 'true' if 'YouTube' in apps else 'false' }}"><input type="hidden" name="instagram" value="{{ 'true' if 'Instagram' in apps else 'false' }}">
+        <input type="hidden" id="downloadIdeasJson" name="ideas_json" value='{{ ideas_json|e }}'>
+        <button class="button button-primary" type="submit">Download my extension <span>↓</span></button>
+      </form>
+    </section>
+
+    <section class="install-steps" id="install">
+      <div class="activities-heading"><div><span class="kicker">Install in about a minute</span><h2>How to put this into Chrome or Edge.</h2></div><a class="text-link" href="/demo">Open guided demo →</a></div>
+      <div class="install-step-grid">
+        <article><b>1</b><h3>Unzip the download</h3><p>Open the ZIP you downloaded and extract the extension folder somewhere you can keep it.</p></article>
+        <article><b>2</b><h3>Open Extensions</h3><p>Chrome: <code>chrome://extensions</code><br>Edge: <code>edge://extensions</code></p></article>
+        <article><b>3</b><h3>Turn on Developer mode</h3><p>Use the Developer mode switch in the top-right of the extensions page.</p></article>
+        <article><b>4</b><h3>Load unpacked</h3><p>Click <strong>Load unpacked</strong> and choose the extracted folder containing <code>manifest.json</code>.</p></article>
+      </div>
+    </section>
+
+    <section class="plan-grid compact-plan-grid">
+      <div class="plan-card settings-card"><span class="kicker">Your setup</span>
+        <div class="setting-row"><div><strong>Short-form check-in</strong><span>YouTube Shorts + Instagram Reels</span></div><b>{{ short_limit }} min</b></div>
+        <div class="setting-row"><div><strong>Long-form reminder</strong><span>Standard YouTube watch pages</span></div><b>{{ long_limit }} min</b></div>
+        <div class="setting-row"><div><strong>Intent check</strong><span>Controls CAPTCHA / puzzle difficulty</span></div><b>{{ friction|title }}</b></div>
+      </div>
+      <div class="plan-card nudge-card"><span class="kicker">Example interruption</span><div class="nudge-preview"><div class="mini-logo"><span></span><span></span></div><div><span class="soft-label">Pause check-in</span><h3>{{ plan.nudge }}</h3><p>You’ve been here for {{ short_limit }} minutes.</p></div></div><div class="chips"><span>{{ trigger }}</span><span>{{ energy }} energy</span><span>repeat snooze checks</span></div></div>
+    </section>
+
+    <section class="activities-section">
+      <div class="activities-heading"><div><span class="kicker">Preview</span><h2>A varied pool — not 30 versions of one hobby.</h2></div><p>These first five show the mix. Each time estimate comes from the AI and is validated before display.</p></div>
+      <div class="activity-grid">{% for item in plan.activities[:5] %}<article class="activity-card"><span class="activity-time">{{ item.minutes }} min</span><h3>{{ item.title }}</h3><p>{{ item.reason }}</p></article>{% endfor %}</div>
+
+      <div class="idea-editor-card"><div class="idea-editor-copy"><span class="kicker">Your extension's break list</span><h2>Edit the final 30.</h2><p>One idea per line. Delete anything weak, add your own, then use the single download button above. The extension will use exactly this list.</p><div class="idea-editor-actions"><button class="button button-ghost" id="copyIdeas" type="button">Copy list</button><span id="ideaEditorCount"></span></div></div>
+      <textarea id="ideaEditor" class="idea-editor" rows="18"></textarea></div>
+    </section>
+
+    <div class="ai-thinking-overlay" id="refineThinkingOverlay" aria-hidden="true"><div class="ai-thinking-card" role="status" aria-live="polite"><div class="ai-thinking-mark">✦</div><span class="soft-label">Pause AI</span><h2>Updating your ideas</h2><div class="thinking-dots"><span></span><span></span><span></span></div><p id="refineThinkingStatus">Reading your new information…</p><small>The new list should change meaningfully, not just reword itself.</small></div></div>
+  </main>
+  <script>
+    const feedbackBox=document.getElementById('feedbackBox');document.querySelectorAll('.chat-hint').forEach(b=>b.addEventListener('click',()=>{feedbackBox.value=b.dataset.message;feedbackBox.focus();}));
+    const chatLog=document.getElementById('refineChatLog');if(chatLog)chatLog.scrollTop=chatLog.scrollHeight;
+    const form=document.getElementById('refineAiForm'),overlay=document.getElementById('refineThinkingOverlay'),status=document.getElementById('refineThinkingStatus');let timer;const msgs=['Reading your new information…','Comparing it with the old activity list…','Replacing repetitive or unrealistic ideas…','Checking time estimates…'];
+    form.addEventListener('submit',()=>{overlay.classList.add('is-visible');overlay.setAttribute('aria-hidden','false');const b=form.querySelector('button[type="submit"]');if(b){b.disabled=true;b.textContent='Updating…';}let i=0;timer=setInterval(()=>{i=(i+1)%msgs.length;status.textContent=msgs[i];},1400);});
+    window.addEventListener('pageshow',()=>{clearInterval(timer);overlay.classList.remove('is-visible');overlay.setAttribute('aria-hidden','true');const b=form.querySelector('button[type="submit"]');if(b){b.disabled=false;b.innerHTML='Update ideas <span>↑</span>';}});
+    const editor=document.getElementById('ideaEditor'),count=document.getElementById('ideaEditorCount'),downloadField=document.getElementById('downloadIdeasJson');
+    const initialIdeas={{ ideas_json|safe }}; editor.value=initialIdeas.join('\n');
+    function currentIdeas(){return editor.value.split('\n').map(x=>x.trim()).filter(Boolean).slice(0,50)}function sync(){const ideas=currentIdeas();count.textContent=`${ideas.length} ideas`;downloadField.value=JSON.stringify(ideas)}editor.addEventListener('input',sync);sync();
+    document.getElementById('copyIdeas').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(currentIdeas().join('\n'));document.getElementById('copyIdeas').textContent='Copied ✓';setTimeout(()=>document.getElementById('copyIdeas').textContent='Copy list',1200)}catch(e){editor.select()}});
+    document.getElementById('personalizedDownloadForm').addEventListener('submit',sync);
+  </script>
+<script src="{{ url_for('static', filename='theme.js') }}"></script></body></html>

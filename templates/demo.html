@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Pause demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>.demo-tower-block{transition:transform .08s linear}</style></head>
+<body>
+<nav class="nav shell">
+  <a class="brand" href="/"><span class="brand-mark"><span></span><span></span></span><span>pause</span></a>
+  <div class="nav-links">
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">◐</button>
+    <a href="/setup">Set up Pause</a><a href="/">Home</a>
+  </div>
+</nav>
+
+<main class="demo-shell shell">
+  <section class="demo-hero">
+    <span class="eyebrow"><span class="live-dot"></span> guided demo</span>
+    <h1>Set it up, then see it interrupt.</h1>
+    <p>Use the controls below like a mini version of onboarding, then trigger the same blocker and intent checks used by the extension.</p>
+  </section>
+
+  <section class="demo-workbench">
+    <article class="demo-setup-panel">
+      <div class="demo-step-heading"><span>01</span><div><h2>Try the setup</h2><p>These settings only affect this demo.</p></div></div>
+      <form id="demoSetupForm" class="demo-mini-form" novalidate>
+        <fieldset>
+          <legend>Where should Pause help?</legend>
+          <div class="choice-row">
+            <label class="choice"><input type="checkbox" name="demoSite" value="YouTube Shorts"><span>YouTube Shorts</span></label>
+            <label class="choice"><input type="checkbox" name="demoSite" value="Instagram Reels"><span>Instagram Reels</span></label>
+          </div>
+        </fieldset>
+        <div class="demo-form-grid">
+          <label class="demo-field">Scroll limit
+            <div class="input-suffix"><input id="demoLimit" type="number" min="1" max="180" placeholder="e.g. 10"><span>min</span></div>
+          </label>
+          <label class="demo-field">Snooze amount
+            <div class="input-suffix"><input id="demoSnoozeMinutes" type="number" min="1" max="30" placeholder="e.g. 5"><span>min</span></div>
+          </label>
+          <label class="demo-field">Intent-check difficulty
+            <select id="demoDifficulty">
+              <option value="" selected disabled>Choose difficulty...</option>
+              <option value="light">Light</option>
+              <option value="medium">Medium</option>
+              <option value="strong">Strong</option>
+            </select>
+          </label>
+          <label class="demo-field">Force a game (testing)
+            <select id="demoGame">
+              <option value="" selected>Random challenge</option>
+              <option value="phrase">Type phrase</option>
+              <option value="math">Math</option>
+              <option value="match">Select matching icons</option>
+              <option value="odd">Spot the different</option>
+              <option value="order">Tap numbers in order</option>
+              <option value="wire">Connect wires</option>
+              <option value="slider">Slider precision</option>
+              <option value="count">Count shapes</option>
+              <option value="duplicate">Find duplicate</option>
+              <option value="spam">Button spam</option>
+              <option value="balloon">Inflate balloon</option>
+              <option value="fishing">Fishing</option>
+              <option value="piano">Piano memory</option>
+              <option value="path">Path puzzle</option>
+              <option value="align">Shape maze</option>
+              <option value="cook">Cooking</option>
+              <option value="tower">Tower stacking</option>
+            </select>
+          </label>
+          <label class="demo-field demo-field-wide">Example break idea
+            <input id="demoIdeaInput" type="text" placeholder="e.g. Listen to one song without opening another app">
+          </label>
+        </div>
+        <div class="demo-form-actions">
+          <button class="button button-primary" id="demoTrigger" type="submit">Trigger example now</button>
+          <span id="demoFormStatus" class="demo-form-status" aria-live="polite"></span>
+        </div>
+      </form>
+    </article>
+
+    <article class="demo-install-panel">
+      <div class="demo-step-heading"><span>02</span><div><h2>How the real extension installs</h2><p>The demo does not install anything. This is the actual Chrome / Edge flow.</p></div></div>
+      <div class="demo-install-steps">
+        <div><b>1</b><span>Download and unzip your personalized extension.</span></div>
+        <div><b>2</b><span>Open <code>chrome://extensions</code> or <code>edge://extensions</code>.</span></div>
+        <div><b>3</b><span>Turn on <strong>Developer mode</strong>.</span></div>
+        <div><b>4</b><span>Choose <strong>Load unpacked</strong> and select the extension folder.</span></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="demo-simulator">
+    <div class="demo-simulator-heading"><span>03</span><div><h2>Example interruption</h2><p>After a snooze, this demo fast-forwards five seconds and immediately shows a fresh randomized check.</p></div></div>
+    <div class="demo-browser">
+      <div class="browser-top"><span></span><span></span><span></span><div class="fake-url" id="demoUrl">youtube.com/shorts/example</div></div>
+      <div class="demo-feed" id="demoFeed">
+        <div class="feed-label" id="demoFeedLabel">Shorts</div>
+        <div class="video-shape"><div class="video-face">:)</div></div>
+
+        <div class="demo-empty-state" id="demoEmptyState">
+          <div class="pause-demo-logo" aria-hidden="true"><i></i><i></i></div>
+          <strong>Set your demo preferences above.</strong>
+          <span>Then click “Trigger example now.”</span>
+        </div>
+
+        <div class="demo-overlay" id="demoOverlay" hidden>
+          <div class="pause-demo-card">
+            <div class="pause-demo-logo" aria-hidden="true"><i></i><i></i></div>
+            <span class="kicker" id="demoKicker">Time check · YouTube Shorts</span>
+            <h2>Time for a real break?</h2>
+            <p class="pause-demo-copy">You asked Pause to interrupt you here instead of letting the feed keep going.</p>
+            <div class="demo-idea-label">Try this instead</div>
+            <div class="demo-idea" id="demoIdea">Listen to one song without opening another app.</div>
+            <div class="demo-actions"><button id="demoLeave" type="button">Do this & leave</button><button id="demoAnother" type="button">Another idea</button></div>
+            <div class="demo-challenge-panel"><h3>Want to keep scrolling?</h3><div id="demoChallenge"></div><div class="demo-check-status" id="demoStatus">Complete the quick check to unlock more scrolling time.</div></div>
+          </div>
+        </div>
+
+        <div class="demo-countdown-panel" id="demoCountdown" hidden><div><span class="kicker" id="demoSnoozeKicker">Demo snooze</span><div class="demo-countdown-number" id="demoCountdownNumber">5</div><p id="demoCountdownCopy">Fast-forwarding the extra time…</p></div></div>
+
+        <div class="demo-finished" id="demoFinished" hidden><div class="demo-finished-inner"><div class="brand"><span class="brand-mark"><span></span><span></span></span><span>pause</span></div><h2>Scrolling tab closed.</h2><p>You chose the break idea, so Pause ends the scrolling session. The real extension closes the active YouTube or Instagram tab at this point.</p><button class="button button-primary" id="demoReset" type="button">Run another example</button></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const overlay=document.getElementById('demoOverlay'),countdown=document.getElementById('demoCountdown'),finished=document.getElementById('demoFinished'),challengeRoot=document.getElementById('demoChallenge'),status=document.getElementById('demoStatus'),emptyState=document.getElementById('demoEmptyState'),formStatus=document.getElementById('demoFormStatus'),demoFeed=document.getElementById('demoFeed'),demoCard=document.querySelector('.pause-demo-card');
+function fitDemoHeight(){if(!demoFeed||!demoCard)return;const needed=Math.max(900,demoCard.scrollHeight+120);demoFeed.style.height=`${needed}px`;}
+if(window.ResizeObserver&&demoCard){new ResizeObserver(fitDemoHeight).observe(demoCard);}window.addEventListener('resize',fitDemoHeight);
+const fallbackIdeas=['Listen to one song without opening another app.','Write down the next single thing you want to finish.','Play one short offline puzzle round.','Send one message you have been meaning to send.','Read two pages of something unrelated to the feed.'];
+let ideas=[...fallbackIdeas],ideaIndex=0,countdownTimer,lastType='',demoSettings=null,demoChallengeStep=1;
+function shuffled(items){const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function getTypes(){
+  return ['phrase','math','match','odd','order','wire','slider','count','duplicate','spam','balloon','fishing','piano','path','align','cook','tower'];
+}
+function makeChallenge(){
+  const base=getTypes(),forced=demoSettings?.game||'',types=base.filter(t=>t!==lastType),pool=types.length?types:base,type=forced&&base.includes(forced)?forced:pool[Math.floor(Math.random()*pool.length)];lastType=type;
+  const level=demoSettings?.difficulty||'medium',size=level==='light'?3:level==='medium'?4:5,count=size*size,orderMax=level==='light'?4:level==='medium'?6:8,wireCount=level==='light'?3:level==='medium'?4:6;
+  if(type==='phrase'){
+    const a=['mint','violet','solar','quiet','pixel','cosmic','silver','lucky'],b=['comet','orbit','lantern','cloud','rocket','pebble','signal','puzzle'],c=['north','echo','river','copper','seven'];
+    const extra=level==='strong'?` ${c[Math.floor(Math.random()*c.length)]} ${a[Math.floor(Math.random()*a.length)]}`:level==='medium'?` ${c[Math.floor(Math.random()*c.length)]}`:'';
+    return{type,phrase:`${a[Math.floor(Math.random()*a.length)]} ${b[Math.floor(Math.random()*b.length)]}${extra} ${Math.floor(10+Math.random()*90)}`};
+  }
+  if(type==='math'){
+    if(level==='light'){const a=2+Math.floor(Math.random()*8),b=1+Math.floor(Math.random()*8);return{type,question:`${a} + ${b}`,answer:a+b};}
+    if(level==='medium'){const op=['+','−','×'][Math.floor(Math.random()*3)];if(op==='×'){const a=2+Math.floor(Math.random()*8),b=2+Math.floor(Math.random()*7);return{type,question:`${a} × ${b}`,answer:a*b};}const a=10+Math.floor(Math.random()*30),b=4+Math.floor(Math.random()*20);if(op==='−'){const l=Math.max(a,b),r=Math.min(a,b);return{type,question:`${l} − ${r}`,answer:l-r};}return{type,question:`${a} + ${b}`,answer:a+b};}
+    const op=['+','−','×','÷'][Math.floor(Math.random()*4)];if(op==='×'){const a=4+Math.floor(Math.random()*12),b=3+Math.floor(Math.random()*11);return{type,question:`${a} × ${b}`,answer:a*b};}if(op==='÷'){const d=2+Math.floor(Math.random()*11),answer=3+Math.floor(Math.random()*12);return{type,question:`${d*answer} ÷ ${d}`,answer};}const a=20+Math.floor(Math.random()*60),b=8+Math.floor(Math.random()*45);if(op==='−'){const l=Math.max(a,b),r=Math.min(a,b);return{type,question:`${l} − ${r}`,answer:l-r};}return{type,question:`${a} + ${b}`,answer:a+b};
+  }
+  if(type==='match'){const icons=['🎧','🎮','⭐','🧩','🎨','🌙','🚀','🎲','🎯','🪐','🍀','⚡'],target=icons[Math.floor(Math.random()*icons.length)],others=icons.filter(x=>x!==target),targetCount=level==='light'?3:level==='medium'?5:7,tiles=Array.from({length:targetCount},()=>target);while(tiles.length<count)tiles.push(others[Math.floor(Math.random()*others.length)]);return{type,target,tiles:shuffled(tiles),cols:size};}
+  if(type==='odd'){const symbols=['▲','➤','♠','☂','✦'],symbol=symbols[Math.floor(Math.random()*symbols.length)],odd=Math.floor(Math.random()*count),rotation=level==='light'?24:level==='medium'?15:9;return{type,symbol,odd,cols:size,rotation};}
+  if(type==='order')return{type,nums:shuffled(Array.from({length:orderMax},(_,i)=>i+1)),max:orderMax};
+  if(type==='wire'){const palette=[{id:'tri',shape:'▲',color:'#e24b4b',name:'red triangle'},{id:'cir',shape:'●',color:'#4f7fe8',name:'blue circle'},{id:'squ',shape:'■',color:'#e0a52b',name:'gold square'},{id:'dia',shape:'◆',color:'#7b5bd6',name:'purple diamond'},{id:'hex',shape:'⬢',color:'#3aa57a',name:'green hexagon'},{id:'star',shape:'★',color:'#d568b5',name:'pink star'},{id:'plus',shape:'✚',color:'#39a5b8',name:'teal plus'},{id:'moon',shape:'☾',color:'#e07b3b',name:'orange moon'}],pairs=shuffled(palette).slice(0,wireCount);return{type,left:shuffled(pairs),right:shuffled(pairs)};}
+  if(type==='slider'){const target=level==='light'?10*Math.floor(2+Math.random()*7):level==='medium'?5*Math.floor(5+Math.random()*15):20+Math.floor(Math.random()*76),tolerance=level==='light'?5:level==='medium'?2:0;return{type,target,tolerance};}
+  if(type==='count'){const shapes=['●','▲','■','◆','⬢'],target=shapes[Math.floor(Math.random()*shapes.length)],others=shapes.filter(x=>x!==target),targetCount=level==='light'?3+Math.floor(Math.random()*4):level==='medium'?5+Math.floor(Math.random()*6):8+Math.floor(Math.random()*9),tiles=Array.from({length:targetCount},()=>target);while(tiles.length<count)tiles.push(others[Math.floor(Math.random()*others.length)]);return{type,target,tiles:shuffled(tiles),answer:targetCount,cols:size};}
+  if(type==='duplicate'){const icons=['🎧','🎮','⭐','🧩','🎨','🌙','🚀','🎲','🎯','🪐','🍀','⚡','🎵','📌','🔷','🔶','🟣','🟩','🔺','🔸','☂️','🍎','🧠','🎈','🪁','🧊'],unique=shuffled(icons).slice(0,count-1),duplicate=unique[Math.floor(Math.random()*unique.length)],tiles=shuffled([...unique,duplicate]);return{type,tiles,duplicate,cols:size};}
+  if(type==='spam')return{type,clicks:level==='light'?15:level==='medium'?30:50};
+  if(type==='balloon')return{type,pumps:level==='light'?6:level==='medium'?15:30};
+  if(type==='fishing')return{type,seconds:level==='light'?4:level==='medium'?7:10,tolerance:level==='light'?14:level==='medium'?10:7,pauseMin:level==='light'?900:level==='medium'?650:450,pauseMax:level==='light'?1600:level==='medium'?1250:950,runMs:level==='light'?700:level==='medium'?520:380,minJump:level==='light'?24:level==='medium'?34:44,gain:level==='light'?1.25:level==='medium'?1.4:1.75,decay:level==='light'?.45:level==='medium'?.5:.55};
+  if(type==='piano'){const keys=['C','D','E','F','G'],length=level==='light'?4:level==='medium'?5:7;return{type,keys,sequence:Array.from({length},()=>Math.floor(Math.random()*keys.length))};}
+  if(type==='path'){const cols=level==='light'?4:5,rows=cols,checkpointCount=level==='light'?4:level==='medium'?6:8;let route=[];for(let r=0;r<rows;r++){const xs=Array.from({length:cols},(_,i)=>i);if(r%2)xs.reverse();xs.forEach(c=>route.push(r*cols+c));}const transforms=[i=>i,i=>{const r=Math.floor(i/cols),c=i%cols;return r*cols+(cols-1-c);},i=>{const r=Math.floor(i/cols),c=i%cols;return(rows-1-r)*cols+c;},i=>{const r=Math.floor(i/cols),c=i%cols;return c*cols+r;}],tf=transforms[Math.floor(Math.random()*transforms.length)];route=route.map(tf);if(Math.random()<.5)route.reverse();const checkpoints=[];for(let n=0;n<checkpointCount;n++){const ix=Math.round(n*(route.length-1)/(checkpointCount-1));checkpoints.push(route[ix]);}return{type,cols,route,checkpoints};}
+  if(type==='align'){const layouts=level==='light'?[{start:[-92,58],target:[76,-42],walls:[[-18,-28,18,82],[48,34,82,18]]},{start:[82,54],target:[-70,-48],walls:[[8,10,18,100],[-48,-24,72,18]]},{start:[-78,-54],target:[72,48],walls:[[-18,18,88,18],[50,-30,18,74]]}]:level==='medium'?[{start:[-102,66],target:[70,-52],walls:[[-52,-18,18,104],[18,34,92,18],[58,-34,18,72]]},{start:[92,-58],target:[-74,50],walls:[[38,-10,18,100],[-20,-42,92,18],[-55,38,18,70]]},{start:[-88,-62],target:[82,42],walls:[[-36,20,92,18],[34,-24,90,18],[68,48,18,54]]},{start:[0,68],target:[-86,-48],walls:[[-46,24,92,18],[42,-20,96,18],[0,-56,18,54]]}]:[{start:[-108,66],target:[78,-54],walls:[[-62,-12,18,118],[-8,40,88,18],[42,-30,18,92],[82,34,62,18]]},{start:[96,-62],target:[-72,48],walls:[[54,-10,18,116],[-5,-46,94,18],[-48,18,18,86],[8,48,86,18]]},{start:[-92,-64],target:[72,54],walls:[[-52,24,86,18],[12,-20,18,112],[56,30,76,18],[-72,-38,52,18]]},{start:[0,68],target:[-88,-50],walls:[[-58,18,18,100],[-5,42,86,18],[45,-12,18,100],[82,-52,54,18]]},{start:[-100,8],target:[82,-42],walls:[[-45,-42,18,72],[-12,18,76,18],[38,48,18,70],[72,-8,70,18]]},{start:[88,60],target:[-82,-22],walls:[[52,16,18,98],[8,-38,86,18],[-42,26,18,94],[-78,-54,54,18]]}];const blocked=(x,y,walls,pad=34)=>walls.some(w=>Math.abs(x-w.x)<w.w/2+pad&&Math.abs(y-w.y)<w.h/2+pad);let choice=null;for(let a=0;a<30&&!choice;a++){const base=layouts[Math.floor(Math.random()*layouts.length)],flipX=Math.random()<.5?-1:1,flipY=Math.random()<.5?-1:1,walls=base.walls.map(([x,y,w,h])=>({x:x*flipX,y:y*flipY,w,h})),startX=base.start[0]*flipX,startY=base.start[1]*flipY,targetX=base.target[0]*flipX,targetY=base.target[1]*flipY;if(Math.abs(startX)<=180&&Math.abs(startY)<=85&&Math.abs(targetX)<=180&&Math.abs(targetY)<=85&&!blocked(startX,startY,walls)&&!blocked(targetX,targetY,walls)&&Math.hypot(startX-targetX,startY-targetY)>100)choice={startX,startY,targetX,targetY,walls};}if(!choice)choice={startX:-155,startY:70,targetX:155,targetY:-70,walls:[{x:-45,y:0,w:18,h:100},{x:45,y:0,w:18,h:100},{x:0,y:0,w:54,h:18}]};return{type,...choice,step:level==='light'?14:level==='medium'?10:7,tolerance:level==='light'?15:level==='medium'?9:5};}
+  if(type==='cook')return{type,items:level==='light'?2:level==='medium'?3:4,greenMs:level==='light'?1800:level==='medium'?1200:800};
+  return{type:'tower',blocks:level==='light'?3:level==='medium'?4:5,wind:level==='light'?.035:level==='medium'?.075:.13,gust:level==='light'?.35:level==='medium'?.8:1.5,gravity:level==='light'?.42:level==='medium'?.55:.68};
+}
+function snoozeLabel(){return `+${demoSettings?.snooze||5} min`;}
+function demoChallengeRequirement(){if(demoSettings?.game)return 1;const level=demoSettings?.difficulty||'medium';return level==='light'?1:level==='strong'?3:2;}
+function renderChallenge(){
+  const c=makeChallenge();
+  const required=demoChallengeRequirement();
+  const finalStep=demoChallengeStep>=required;
+  status.textContent=required===1?'Complete this intent check to unlock more scrolling time.':`Challenge ${demoChallengeStep} of ${required} — complete this check${finalStep?' to unlock more scrolling time.':' to continue.'}`;
+  if(c.type==='phrase'){
+    challengeRoot.innerHTML=`<div class="demo-challenge-copy">Type <strong>${c.phrase}</strong> exactly.</div><input class="demo-challenge-input" id="demoInput" autocomplete="off" placeholder="Type the phrase exactly"><button class="demo-snooze-btn" id="demoSnooze" disabled>${snoozeLabel()}</button>`;
+    const input=document.getElementById('demoInput'),btn=document.getElementById('demoSnooze');
+    input.addEventListener('input',()=>{btn.disabled=input.value.trim().toLowerCase()!==c.phrase.toLowerCase();if(!btn.disabled)status.textContent='Challenge complete.';});
+    wireSnooze(btn);return;
+  }
+  if(c.type==='math'){
+    challengeRoot.innerHTML=`<div class="demo-challenge-copy">Solve this quick check.</div><div class="demo-math-question">${c.question} = ?</div><input class="demo-challenge-input" id="demoInput" inputmode="numeric" placeholder="Answer"><button class="demo-snooze-btn" id="demoSnooze" disabled>${snoozeLabel()}</button>`;
+    const input=document.getElementById('demoInput'),btn=document.getElementById('demoSnooze');
+    input.addEventListener('input',()=>{btn.disabled=Number(input.value)!==c.answer;if(!btn.disabled)status.textContent='Challenge complete.';});
+    wireSnooze(btn);return;
+  }
+  if(c.type==='match'){
+    challengeRoot.innerHTML=`<div class="demo-challenge-copy">Select every tile with <strong class="demo-target-icon">${c.target}</strong>.</div><div class="demo-tile-grid ${c.cols===5?'demo-grid-5':c.cols===4?'demo-grid-4':''}">${c.tiles.map((x,i)=>`<button type="button" class="demo-tile" data-i="${i}">${x}</button>`).join('')}</div><button class="demo-snooze-btn" id="demoSnooze" disabled>${snoozeLabel()}</button>`;
+    const selected=new Set(),targets=new Set(c.tiles.map((x,i)=>x===c.target?i:-1).filter(i=>i>=0)),btn=document.getElementById('demoSnooze');
+    challengeRoot.querySelectorAll('.demo-tile').forEach(b=>b.addEventListener('click',()=>{const i=Number(b.dataset.i);selected.has(i)?selected.delete(i):selected.add(i);b.classList.toggle('selected',selected.has(i));const exact=selected.size===targets.size&&[...targets].every(i=>selected.has(i));btn.disabled=!exact;status.textContent=exact?'Challenge complete.':`Selected ${selected.size}. Find every ${c.target}.`;}));
+    wireSnooze(btn);return;
+  }
+  if(c.type==='odd'){
+    challengeRoot.innerHTML=`<div class="demo-challenge-copy">Tap the one tile that is subtly different.</div><div class="demo-tile-grid ${c.cols===5?'demo-grid-5':c.cols===4?'demo-grid-4':''}">${Array.from({length:c.cols*c.cols},(_,i)=>`<button type="button" class="demo-tile" data-i="${i}"><span style="display:inline-block;transform:rotate(${i===c.odd?c.rotation:0}deg)">${c.symbol}</span></button>`).join('')}</div><button class="demo-snooze-btn" id="demoSnooze" disabled>${snoozeLabel()}</button>`;
+    const btn=document.getElementById('demoSnooze');
+    challengeRoot.querySelectorAll('.demo-tile').forEach(b=>b.addEventListener('click',()=>{challengeRoot.querySelectorAll('.demo-tile').forEach(x=>x.classList.remove('selected','wrong'));const ok=Number(b.dataset.i)===c.odd;b.classList.add(ok?'selected':'wrong');btn.disabled=!ok;status.textContent=ok?'Challenge complete.':'Not that one. Look again.';}));
+    wireSnooze(btn);return;
+  }
+  if(c.type==='wire'){
+    challengeRoot.innerHTML=`<div class="demo-challenge-copy">Connect each left wire to the matching <strong>color + shape</strong> on the right.</div><div class="demo-wire-board" id="demoWireBoard"><svg class="demo-wire-lines" id="demoWireLines" aria-hidden="true"></svg><div class="demo-wire-column">${c.left.map(item=>`<button type="button" class="demo-wire-node" data-side="left" data-pair="${item.id}" data-color="${item.color}" style="--wire-color:${item.color}" aria-label="${item.name}"><span>${item.shape}</span></button>`).join('')}</div><div class="demo-wire-column">${c.right.map(item=>`<button type="button" class="demo-wire-node" data-side="right" data-pair="${item.id}" data-color="${item.color}" style="--wire-color:${item.color}" aria-label="${item.name}"><span>${item.shape}</span></button>`).join('')}</div></div><button class="demo-snooze-btn" id="demoSnooze" disabled>${snoozeLabel()}</button>`;
+    const board=document.getElementById('demoWireBoard'),svg=document.getElementById('demoWireLines'),btn=document.getElementById('demoSnooze'),matched=new Set();let selectedLeft=null;
+    const draw=(lbtn,rbtn,color)=>{const br=board.getBoundingClientRect(),l=lbtn.getBoundingClientRect(),r=rbtn.getBoundingClientRect(),x1=l.right-br.left,y1=l.top+l.height/2-br.top,x2=r.left-br.left,y2=r.top+r.height/2-br.top,bend=Math.max(28,(x2-x1)*.45),path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d',`M ${x1} ${y1} C ${x1+bend} ${y1}, ${x2-bend} ${y2}, ${x2} ${y2}`);path.setAttribute('fill','none');path.setAttribute('stroke',color);path.setAttribute('stroke-width','5');path.setAttribute('stroke-linecap','round');svg.appendChild(path);};
+    const left=[...challengeRoot.querySelectorAll('.demo-wire-node[data-side="left"]')],right=[...challengeRoot.querySelectorAll('.demo-wire-node[data-side="right"]')];
+    left.forEach(b=>b.addEventListener('click',()=>{if(matched.has(b.dataset.pair))return;left.forEach(x=>x.classList.remove('active'));selectedLeft=b;b.classList.add('active');status.textContent=`Now choose the matching ${b.getAttribute('aria-label')} on the right.`;}));
+    right.forEach(b=>b.addEventListener('click',()=>{if(matched.has(b.dataset.pair))return;if(!selectedLeft){status.textContent='Choose a wire on the left first.';return;}if(selectedLeft.dataset.pair===b.dataset.pair){matched.add(b.dataset.pair);selectedLeft.classList.remove('active');selectedLeft.classList.add('matched');b.classList.add('matched');draw(selectedLeft,b,b.dataset.color);selectedLeft=null;btn.disabled=matched.size!==c.left.length;status.textContent=btn.disabled?`${matched.size}/${c.left.length} wires connected.`:'All wires connected — challenge complete.';}else{b.classList.add('wrong');selectedLeft.classList.add('wrong');status.textContent='Those do not match. Try that wire again.';setTimeout(()=>{b.classList.remove('wrong');if(selectedLeft)selectedLeft.classList.remove('wrong');},320);}}));
+    wireSnooze(btn);return;
+  }
+  if(c.type==='slider'){
+    challengeRoot.innerHTML=`<div class="demo-challenge-copy">Move the slider to <strong>${c.target}</strong>${c.tolerance?` (within ±${c.tolerance})`:''}.</div><div class="demo-precision"><input id="demoPrecision" type="range" min="0" max="100" value="0"><output id="demoPrecisionValue">0</output></div><button class="demo-snooze-btn" id="demoSnooze" disabled>${snoozeLabel()}</button>`;
+    const slider=document.getElementById('demoPrecision'),out=document.getElementById('demoPrecisionValue'),btn=document.getElementById('demoSnooze');slider.addEventListener('input',()=>{const v=Number(slider.value);out.textContent=v;const ok=Math.abs(v-c.target)<=c.tolerance;btn.disabled=!ok;status.textContent=ok?'Precision check complete.':`Current value: ${v}. Target: ${c.target}.`;});wireSnooze(btn);return;
+  }
+  if(c.type==='count'){
+    challengeRoot.innerHTML=`<div class="demo-challenge-copy">How many <strong>${c.target}</strong> shapes are in the grid?</div><div class="demo-tile-grid ${c.cols===5?'demo-grid-5':c.cols===4?'demo-grid-4':''}">${c.tiles.map(x=>`<div class="demo-tile demo-static-tile">${x}</div>`).join('')}</div><input class="demo-challenge-input" id="demoInput" inputmode="numeric" placeholder="Count"><button class="demo-snooze-btn" id="demoSnooze" disabled>${snoozeLabel()}</button>`;
+    const input=document.getElementById('demoInput'),btn=document.getElementById('demoSnooze');input.addEventListener('input',()=>{const ok=Number(input.value)===c.answer;btn.disabled=!ok;status.textContent=ok?'Count correct — challenge complete.':'Count the target shapes carefully.';});wireSnooze(btn);return;
+  }
+  if(c.type==='duplicate'){
+    challengeRoot.innerHTML=`<div class="demo-challenge-copy">Find the <strong>two matching tiles</strong>. Tap both copies.</div><div class="demo-tile-grid ${c.cols===5?'demo-grid-5':c.cols===4?'demo-grid-4':''}">${c.tiles.map((x,i)=>`<button type="button" class="demo-tile" data-i="${i}">${x}</button>`).join('')}</div><button class="demo-snooze-btn" id="demoSnooze" disabled>${snoozeLabel()}</button>`;
+    const selected=new Set(),btn=document.getElementById('demoSnooze');challengeRoot.querySelectorAll('.demo-tile').forEach(b=>b.addEventListener('click',()=>{const i=Number(b.dataset.i);if(selected.has(i))selected.delete(i);else if(selected.size<2)selected.add(i);b.classList.toggle('selected',selected.has(i));const picks=[...selected].map(ix=>c.tiles[ix]),ok=picks.length===2&&picks[0]===c.duplicate&&picks[1]===c.duplicate;btn.disabled=!ok;status.textContent=ok?'Duplicate found — challenge complete.':selected.size===2?'Those are not the duplicate pair.':'Select both matching tiles.';if(selected.size===2&&!ok)setTimeout(()=>{selected.clear();challengeRoot.querySelectorAll('.demo-tile').forEach(x=>x.classList.remove('selected'));},450);}));wireSnooze(btn);return;
+  }
+  if(c.type==='spam'){
+    challengeRoot.innerHTML=`<div class="demo-challenge-copy">Press the button <strong>${c.clicks} times</strong> to prove you really want more scrolling time.</div><div class="demo-spam-wrap"><button type="button" class="demo-spam-button" id="demoSpamButton">PRESS ME</button><div class="demo-pump-count" id="demoSpamCount">0 / ${c.clicks} presses</div></div><button class="demo-snooze-btn" id="demoSnooze" disabled>${snoozeLabel()}</button>`;
+    const spam=document.getElementById('demoSpamButton'),countEl=document.getElementById('demoSpamCount'),btn=document.getElementById('demoSnooze');let clicks=0;spam.addEventListener('click',()=>{clicks++;const left=Math.max(0,c.clicks-clicks);countEl.textContent=`${Math.min(clicks,c.clicks)} / ${c.clicks} presses`;spam.textContent=left?`PRESS ME · ${left}`:'DONE';if(clicks>=c.clicks){spam.disabled=true;btn.disabled=false;status.textContent='Button check complete.';}else status.textContent=`${left} presses left.`;});wireSnooze(btn);return;
+  }
+  if(c.type==='balloon'){
+    challengeRoot.innerHTML=`<div class="demo-challenge-copy">Pump the balloon until it pops. Drag the pump all the way back and forth.</div><div class="demo-balloon-wrap"><div class="demo-balloon" id="demoBalloon">🎈</div><div class="demo-pump-count" id="demoPumpCount">0 / ${c.pumps} pumps</div><input id="demoBalloonPump" type="range" min="0" max="100" value="0"></div><button class="demo-snooze-btn" id="demoSnooze" disabled>${snoozeLabel()}</button>`;
+    const pump=document.getElementById('demoBalloonPump'),balloon=document.getElementById('demoBalloon'),countEl=document.getElementById('demoPumpCount'),btn=document.getElementById('demoSnooze');let pumps=0,lastEdge='low';pump.addEventListener('input',()=>{const v=Number(pump.value),edge=v>=92?'high':v<=8?'low':null;if(edge&&edge!==lastEdge){if(lastEdge==='low'&&edge==='high'||lastEdge==='high'&&edge==='low'){pumps++;countEl.textContent=`${Math.min(pumps,c.pumps)} / ${c.pumps} pumps`;balloon.style.transform=`scale(${1+Math.min(.9,pumps/c.pumps*.9)})`;if(pumps>=c.pumps){balloon.textContent='💥';btn.disabled=false;status.textContent='Balloon popped — challenge complete.';pump.disabled=true;}}lastEdge=edge;}});wireSnooze(btn);return;
+  }
+  if(c.type==='fishing'){
+    challengeRoot.innerHTML=`<div class="demo-challenge-copy">Keep the hook inside the moving green catch zone until the meter fills. The fish may pause, then make a long run.</div><div class="demo-fishing"><div class="demo-fish-track"><div id="demoFishZone" class="demo-fish-zone"></div></div><input id="demoFishSlider" type="range" min="0" max="100" value="50"><div class="demo-fish-progress"><i id="demoFishProgress"></i></div></div><button class="demo-snooze-btn" id="demoSnooze" disabled>${snoozeLabel()}</button>`;
+    const slider=document.getElementById('demoFishSlider'),zone=document.getElementById('demoFishZone'),bar=document.getElementById('demoFishProgress'),btn=document.getElementById('demoSnooze');let progress=0,last=performance.now(),zonePos=50,from=50,to=50,moveStart=0,moving=false,nextMoveAt=performance.now()+c.pauseMin+Math.random()*(c.pauseMax-c.pauseMin);const need=c.seconds*1000;zone.style.width=`${c.tolerance*2}%`;const pick=()=>{let x=zonePos,n=0;while(Math.abs(x-zonePos)<c.minJump&&n++<20)x=12+Math.random()*76;return Math.max(12,Math.min(88,x));};const tick=now=>{if(progress>=need)return;const dt=Math.min(60,now-last);last=now;if(!moving&&now>=nextMoveAt){from=zonePos;to=pick();moveStart=now;moving=true;status.textContent='The fish is running — follow it!';}if(moving){const t=Math.min(1,(now-moveStart)/c.runMs),e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;zonePos=from+(to-from)*e;if(t>=1){moving=false;zonePos=to;nextMoveAt=now+c.pauseMin+Math.random()*(c.pauseMax-c.pauseMin);}}zone.style.left=`${zonePos-c.tolerance}%`;const inside=Math.abs(Number(slider.value)-zonePos)<=c.tolerance;progress=Math.max(0,Math.min(need,progress+(inside?dt*(c.gain||1.4):-dt*(c.decay||.5))));bar.style.width=`${progress/need*100}%`;if(!moving)status.textContent=inside?'Hold it there…':'Get the hook back into the green catch zone.';if(progress>=need){btn.disabled=false;status.textContent='Fish caught — challenge complete.';return;}requestAnimationFrame(tick);};requestAnimationFrame(tick);wireSnooze(btn);return;
+  }
+  if(c.type==='piano'){
+    challengeRoot.innerHTML=`<div class="demo-challenge-copy">Watch the piano pattern, then play it back from memory.</div><div class="demo-piano">${c.keys.map((k,i)=>`<button type="button" class="demo-piano-key" data-key="${i}">${k}</button>`).join('')}</div><button type="button" class="demo-piano-replay" id="demoPianoReplay">Show pattern</button><button class="demo-snooze-btn" id="demoSnooze" disabled>${snoozeLabel()}</button>`;
+    const keys=[...challengeRoot.querySelectorAll('.demo-piano-key')],replay=document.getElementById('demoPianoReplay'),btn=document.getElementById('demoSnooze');let accepting=false,index=0;const flash=async()=>{accepting=false;index=0;keys.forEach(k=>k.disabled=true);for(const n of c.sequence){keys[n].classList.add('active');await new Promise(r=>setTimeout(r,320));keys[n].classList.remove('active');await new Promise(r=>setTimeout(r,120));}keys.forEach(k=>k.disabled=false);accepting=true;status.textContent='Your turn — repeat the pattern.';};replay.addEventListener('click',flash);keys.forEach((k,n)=>k.addEventListener('click',()=>{if(!accepting)return;k.classList.add('active');setTimeout(()=>k.classList.remove('active'),130);if(c.sequence[index]===n){index++;if(index===c.sequence.length){accepting=false;btn.disabled=false;status.textContent='Pattern remembered — challenge complete.';}}else{status.textContent='Pattern reset. Watch it again.';flash();}}));setTimeout(flash,300);wireSnooze(btn);return;
+  }
+  if(c.type==='path'){
+    challengeRoot.innerHTML=`<div class="demo-challenge-copy">Start on <strong>1</strong> and visit <strong>every tile exactly once</strong>, while hitting each numbered checkpoint in order. Move only up, down, left, or right.</div><div class="demo-path-wrap" id="demoPathWrap"><svg class="demo-path-lines" id="demoPathLines" aria-hidden="true"></svg><div class="demo-path-grid" id="demoPathGrid" style="--path-cols:${c.cols}">${Array.from({length:c.cols*c.cols},(_,i)=>{const n=c.checkpoints.indexOf(i)+1;return `<button type="button" class="demo-path-cell ${n?'has-number':''}" data-cell="${i}" data-number="${n||0}">${n||''}</button>`}).join('')}</div></div><button type="button" class="demo-piano-replay" id="demoPathReset">Reset path</button><button class="demo-snooze-btn" id="demoSnooze" disabled>${snoozeLabel()}</button>`;
+    const grid=document.getElementById('demoPathGrid'),wrap=document.getElementById('demoPathWrap'),svg=document.getElementById('demoPathLines'),cells=[...grid.querySelectorAll('.demo-path-cell')],btn=document.getElementById('demoSnooze'),resetBtn=document.getElementById('demoPathReset');let visited=[],nextCheckpoint=1;
+    const resetPath=()=>{visited=[];nextCheckpoint=1;svg.innerHTML='';cells.forEach(x=>x.classList.remove('selected','wrong'));btn.disabled=true;status.textContent='Start on 1, then visit every tile exactly once while reaching checkpoints in order.';};
+    resetBtn.addEventListener('click',resetPath);
+    const adjacent=(a,b)=>{const ar=Math.floor(a/c.cols),ac=a%c.cols,br=Math.floor(b/c.cols),bc=b%c.cols;return Math.abs(ar-br)+Math.abs(ac-bc)===1;};
+    const draw=(a,b)=>{const wr=wrap.getBoundingClientRect(),ar=a.getBoundingClientRect(),br=b.getBoundingClientRect();svg.setAttribute('viewBox',`0 0 ${wr.width} ${wr.height}`);svg.setAttribute('width',wr.width);svg.setAttribute('height',wr.height);const line=document.createElementNS('http://www.w3.org/2000/svg','line');line.setAttribute('x1',ar.left+ar.width/2-wr.left);line.setAttribute('y1',ar.top+ar.height/2-wr.top);line.setAttribute('x2',br.left+br.width/2-wr.left);line.setAttribute('y2',br.top+br.height/2-wr.top);line.setAttribute('stroke','#7057ff');line.setAttribute('stroke-width','5');line.setAttribute('stroke-linecap','round');svg.appendChild(line);};
+    cells.forEach(cell=>cell.addEventListener('click',()=>{const idx=Number(cell.dataset.cell),num=Number(cell.dataset.number);if(!visited.length){if(num!==1){cell.classList.add('wrong');status.textContent='Start on 1.';setTimeout(()=>cell.classList.remove('wrong'),240);return;}visited=[idx];nextCheckpoint=2;cell.classList.add('selected');status.textContent=`Path started. Reach checkpoint ${nextCheckpoint}.`;return;}const last=visited[visited.length-1];if(visited.includes(idx)){cell.classList.add('wrong');status.textContent='You cannot reuse a tile.';setTimeout(()=>cell.classList.remove('wrong'),240);return;}if(!adjacent(last,idx)){cell.classList.add('wrong');status.textContent='Only move up, down, left, or right.';setTimeout(()=>cell.classList.remove('wrong'),240);return;}if(num&&num!==nextCheckpoint){cell.classList.add('wrong');status.textContent=`Reach checkpoint ${nextCheckpoint} before ${num}.`;setTimeout(()=>cell.classList.remove('wrong'),240);return;}draw(cells[last],cell);visited.push(idx);cell.classList.add('selected');if(num===nextCheckpoint)nextCheckpoint++;const allTiles=visited.length===c.cols*c.cols,allCheckpoints=nextCheckpoint>c.checkpoints.length;if(allTiles&&allCheckpoints){btn.disabled=false;status.textContent='Path complete — every tile visited exactly once.';}else if(allCheckpoints){status.textContent=`All checkpoints reached. Keep going — ${c.cols*c.cols-visited.length} tile${c.cols*c.cols-visited.length===1?'':'s'} left.`;}else status.textContent=`Good. Keep going to checkpoint ${nextCheckpoint}. ${c.cols*c.cols-visited.length} tiles left.`;}));
+    wireSnooze(btn);return;
+  }
+  if(c.type==='align'){
+    challengeRoot.innerHTML=`<div class="demo-challenge-copy">Navigate around the walls and fit the solid shape inside the outline.</div><div class="demo-align-board">${c.walls.map(w=>`<div class="demo-align-wall" style="left:calc(50% + ${w.x}px);top:calc(50% + ${w.y}px);width:${w.w}px;height:${w.h}px"></div>`).join('')}<div class="demo-align-target" style="transform:translate(${c.targetX}px,${c.targetY}px)">◆</div><div class="demo-align-piece" id="demoAlignPiece">◆</div></div><div class="demo-dpad"><button data-dir="up">↑</button><div><button data-dir="left">←</button><button data-dir="down">↓</button><button data-dir="right">→</button></div></div><button class="demo-snooze-btn" id="demoSnooze" disabled>${snoozeLabel()}</button>`;
+    const piece=document.getElementById('demoAlignPiece'),btn=document.getElementById('demoSnooze');let x=c.startX,y=c.startY;const hitsWall=(nx,ny)=>c.walls.some(w=>Math.abs(nx-w.x)<w.w/2+27&&Math.abs(ny-w.y)<w.h/2+27);const draw=()=>{piece.style.transform=`translate(${x}px,${y}px)`;const dx=Math.abs(x-c.targetX),dy=Math.abs(y-c.targetY),ok=dx<=c.tolerance&&dy<=c.tolerance;btn.disabled=!ok;status.textContent=ok?'Shape aligned — challenge complete.':`Target distance: ${Math.round(dx+dy)} px`;};draw();challengeRoot.querySelectorAll('.demo-dpad button').forEach(b=>b.addEventListener('click',()=>{let nx=x,ny=y;if(b.dataset.dir==='left')nx-=c.step;if(b.dataset.dir==='right')nx+=c.step;if(b.dataset.dir==='up')ny-=c.step;if(b.dataset.dir==='down')ny+=c.step;nx=Math.max(-180,Math.min(180,nx));ny=Math.max(-112,Math.min(112,ny));if(!hitsWall(nx,ny)){x=nx;y=ny;}else status.textContent='Wall blocked you — go around.';draw();}));wireSnooze(btn);return;
+  }
+  if(c.type==='cook'){
+    challengeRoot.innerHTML=`<div class="demo-challenge-copy">Cook every item to green. Click an item to put it on the grill, then click it again while green to remove it. Burn one and the food catches fire.</div><div class="demo-cook-source" id="demoCookSource">${Array.from({length:c.items},(_,i)=>`<button type="button" class="demo-food" data-food="${i}">${['🥩','🍔','🌽','🍤'][i%4]}</button>`).join('')}</div><div class="demo-grill" id="demoGrill"><span>GRILL</span></div><div class="demo-cook-score" id="demoCookScore">0 / ${c.items} perfect</div><button class="demo-snooze-btn" id="demoSnooze" disabled>${snoozeLabel()}</button>`;
+    const source=document.getElementById('demoCookSource'),grill=document.getElementById('demoGrill'),score=document.getElementById('demoCookScore'),btn=document.getElementById('demoSnooze');let done=0;const timers=new Map(),original=new Map([...source.querySelectorAll('.demo-food')].map(f=>[f.dataset.food,f.textContent]));const resetAll=()=>{timers.forEach(v=>clearInterval(v));timers.clear();done=0;score.textContent=`0 / ${c.items} perfect`;grill.querySelectorAll('.demo-food').forEach(f=>source.appendChild(f));source.querySelectorAll('.demo-food').forEach(f=>{f.disabled=false;f.dataset.state='raw';f.style.background='';f.textContent=original.get(f.dataset.food)||'🍳';});status.textContent='Start again — watch the grill carefully.';};const burnFood=food=>{food.dataset.state='burn';food.style.background='#d3322b';food.textContent='🔥';food.disabled=true;status.textContent='Burned! 🔥 Restarting the grill…';timers.forEach(v=>clearInterval(v));timers.clear();setTimeout(resetAll,900);};const startFood=food=>{if(timers.has(food)||food.disabled)return;grill.appendChild(food);const greenStart=2400+Number(food.dataset.food)*650,greenEnd=greenStart+c.greenMs,start=Date.now();const timer=setInterval(()=>{const t=Date.now()-start,color=t<greenStart*.55?'#d84b4b':t<greenStart?'#d8aa3a':'#4caf67';food.style.background=color;food.dataset.state=t>=greenStart&&t<=greenEnd?'green':'cooking';if(t>greenEnd){clearInterval(timer);burnFood(food);}},80);timers.set(food,timer);};source.querySelectorAll('.demo-food').forEach(food=>food.addEventListener('click',()=>startFood(food)));grill.addEventListener('click',e=>{const food=e.target.closest('.demo-food');if(!food)return;if(food.dataset.state==='green'){clearInterval(timers.get(food));timers.delete(food);food.disabled=true;source.appendChild(food);done++;score.textContent=`${done} / ${c.items} perfect`;if(done===c.items){btn.disabled=false;status.textContent='Everything cooked perfectly — challenge complete.';}}else if(food.dataset.state==='burn')burnFood(food);else status.textContent='Not ready yet — wait for green.';});wireSnooze(btn);return;
+  }
+  if(c.type==='tower'){
+    challengeRoot.innerHTML=`<div class="demo-challenge-copy">Stack every shape on the raised platform, then keep the finished tower standing against the wind for 3 seconds.</div><div class="demo-tower-board" id="demoTowerBoard"><div class="demo-tower-ground"></div><div class="demo-tower-platform" id="demoTowerPlatform"></div>${Array.from({length:c.blocks},(_,i)=>`<div class="demo-tower-block" data-block="${i}" style="left:${20+i*55}px;top:${18+(i%2)*8}px;width:${46+(i%3)*8}px">${['■','●','▲','◆','⬢'][i%5]}</div>`).join('')}</div><div class="demo-pump-count" id="demoTowerStatus">Drag pieces close to a support and release to snap them into place.</div><button class="demo-snooze-btn" id="demoSnooze" disabled>${snoozeLabel()}</button>`;
+    const board=document.getElementById('demoTowerBoard'),blocks=[...board.querySelectorAll('.demo-tower-block')],platform=document.getElementById('demoTowerPlatform'),label=document.getElementById('demoTowerStatus'),btn=document.getElementById('demoSnooze');
+    const state=blocks.map((b,i)=>({el:b,x:b.offsetLeft,y:b.offsetTop,placed:false,drag:false,ox:0,oy:0,index:i}));let stableSince=0,done=false;
+    const overlap=(x1,w1,x2,w2)=>Math.max(0,Math.min(x1+w1,x2+w2)-Math.max(x1,x2));
+    const supportsFor=st=>{const out=[{x:platform.offsetLeft,y:platform.offsetTop,w:platform.offsetWidth}];for(const o of state){if(o!==st&&o.placed)out.push({x:o.x,y:o.y,w:o.el.offsetWidth});}return out;};
+    const snap=st=>{const w=st.el.offsetWidth,h=st.el.offsetHeight;const options=supportsFor(st).filter(s=>overlap(st.x,w,s.x,s.w)>=Math.min(w,s.w)*.34);if(!options.length){st.placed=false;return false;}options.sort((a,b)=>Math.abs(a.y-h-st.y)-Math.abs(b.y-h-st.y));const sup=options[0];if(Math.abs((sup.y-h)-st.y)>115){st.placed=false;return false;}st.y=sup.y-h;const minX=Math.max(0,sup.x-w*.55),maxX=Math.min(board.clientWidth-w,sup.x+sup.w-w*.45);st.x=Math.max(minX,Math.min(maxX,st.x));st.placed=true;st.el.style.left=`${st.x}px`;st.el.style.top=`${st.y}px`;st.el.style.transform='';return true;};
+    const supported=st=>{if(!st.placed)return false;const w=st.el.offsetWidth,h=st.el.offsetHeight;return supportsFor(st).some(s=>Math.abs(st.y-(s.y-h))<3&&overlap(st.x,w,s.x,s.w)>=Math.min(w,s.w)*.34);};
+    const stacked=()=>state.every(supported)&&state.some(st=>Math.abs(st.y-(platform.offsetTop-st.el.offsetHeight))<3);
+    const loop=now=>{if(done)return;if(stacked()){const amp=demoSettings.difficulty==='strong'?5.5:demoSettings.difficulty==='light'?1.5:3;state.forEach(st=>{if(!st.drag)st.el.style.transform=`translateX(${Math.sin(now/380+st.index*1.6)*amp}px) rotate(${Math.sin(now/520+st.index)*amp*.18}deg)`;});if(!stableSince)stableSince=now;const rem=Math.max(0,3-(now-stableSince)/1000);label.textContent=`Tower standing… ${rem.toFixed(1)}s`;if(now-stableSince>=3000){done=true;state.forEach(st=>st.el.style.transform='');btn.disabled=false;status.textContent='Tower survived the wind — challenge complete.';return;}}else{stableSince=0;state.forEach(st=>{if(!st.drag)st.el.style.transform='';});label.textContent='Stack every piece on the raised platform. Wind starts once complete.';}requestAnimationFrame(loop);};
+    state.forEach(st=>{const b=st.el;b.addEventListener('pointerdown',e=>{st.drag=true;st.placed=false;stableSince=0;b.style.transform='';const r=b.getBoundingClientRect();st.ox=e.clientX-r.left;st.oy=e.clientY-r.top;b.setPointerCapture?.(e.pointerId);});b.addEventListener('pointermove',e=>{if(!st.drag)return;const br=board.getBoundingClientRect(),maxX=board.clientWidth-b.offsetWidth,maxY=board.clientHeight-b.offsetHeight-34;st.x=Math.max(0,Math.min(maxX,e.clientX-br.left-st.ox));st.y=Math.max(0,Math.min(maxY,e.clientY-br.top-st.oy));b.style.left=`${st.x}px`;b.style.top=`${st.y}px`;});const release=e=>{if(!st.drag)return;st.drag=false;try{if(e?.pointerId!=null&&b.hasPointerCapture?.(e.pointerId))b.releasePointerCapture(e.pointerId);}catch{}const br=board.getBoundingClientRect(),rr=b.getBoundingClientRect();st.x=Math.max(0,Math.min(board.clientWidth-b.offsetWidth,rr.left-br.left));st.y=Math.max(0,Math.min(board.clientHeight-b.offsetHeight-34,rr.top-br.top));if(!snap(st))label.textContent='Drop close to the platform or another block to stack it.';};b.addEventListener('pointerup',release);b.addEventListener('pointercancel',release);});requestAnimationFrame(loop);wireSnooze(btn);return;
+  }
+  challengeRoot.innerHTML=`<div class="demo-challenge-copy">Tap the numbers in order: <strong>${Array.from({length:c.max},(_,i)=>i+1).join(' → ')}</strong>.</div><div class="demo-order-row ${c.max>=8?'demo-order-hard':''}">${c.nums.map(n=>`<button type="button" class="demo-order-tile" data-n="${n}">${n}</button>`).join('')}</div><button class="demo-snooze-btn" id="demoSnooze" disabled>${snoozeLabel()}</button>`;
+  let next=1;const btn=document.getElementById('demoSnooze');
+  challengeRoot.querySelectorAll('.demo-order-tile').forEach(b=>b.addEventListener('click',()=>{const n=Number(b.dataset.n);if(n===next){b.disabled=true;b.classList.add('selected');next++;status.textContent=next>c.max?'Sequence complete — challenge complete.':`Good. Tap ${next} next.`;if(next>c.max)btn.disabled=false;}else{status.textContent='Wrong order — start again.';next=1;challengeRoot.querySelectorAll('.demo-order-tile').forEach(x=>{x.disabled=false;x.classList.remove('selected');});btn.disabled=true;}}));
+  wireSnooze(btn);
+}
+function wireSnooze(btn){const required=demoChallengeRequirement(),finalStep=demoChallengeStep>=required;btn.textContent=finalStep?snoozeLabel():`Next challenge (${demoChallengeStep}/${required})`;btn.addEventListener('click',()=>{if(!finalStep){demoChallengeStep++;renderChallenge();requestAnimationFrame(fitDemoHeight);return;}overlay.hidden=true;countdown.hidden=false;document.getElementById('demoSnoozeKicker').textContent=`Demo snooze · +${demoSettings.snooze} min`;document.getElementById('demoCountdownCopy').textContent=`Fast-forwarding the extra ${demoSettings.snooze} minute${demoSettings.snooze===1?'':'s'}…`;let n=5;document.getElementById('demoCountdownNumber').textContent=n;clearInterval(countdownTimer);countdownTimer=setInterval(()=>{n--;document.getElementById('demoCountdownNumber').textContent=Math.max(0,n);if(n<=0){clearInterval(countdownTimer);showOverlay();}},450);});}
+function showOverlay(){emptyState.hidden=true;countdown.hidden=true;finished.hidden=true;demoChallengeStep=1;document.getElementById('demoKicker').textContent=`${demoSettings.limit} minute check-in · ${demoSettings.site}`;document.getElementById('demoIdea').textContent=ideas[ideaIndex];renderChallenge();overlay.hidden=false;requestAnimationFrame(fitDemoHeight);}
+function readSettings(){const sites=[...document.querySelectorAll('input[name="demoSite"]:checked')].map(x=>x.value);const limit=Number(document.getElementById('demoLimit').value),snooze=Number(document.getElementById('demoSnoozeMinutes').value),difficulty=document.getElementById('demoDifficulty').value,game=document.getElementById('demoGame').value,customIdea=document.getElementById('demoIdeaInput').value.trim();if(!sites.length)return{error:'Choose YouTube Shorts or Instagram Reels.'};if(!Number.isFinite(limit)||limit<1)return{error:'Enter a scroll limit of at least 1 minute.'};if(!Number.isFinite(snooze)||snooze<1)return{error:'Enter a snooze amount of at least 1 minute.'};if(!difficulty)return{error:'Choose an intent-check difficulty.'};return{site:sites[0],limit:Math.round(limit),snooze:Math.round(snooze),difficulty,game,customIdea};}
+document.getElementById('demoSetupForm').addEventListener('submit',e=>{e.preventDefault();const s=readSettings();if(s.error){formStatus.textContent=s.error;return;}demoSettings=s;formStatus.textContent='Demo ready.';document.getElementById('demoUrl').textContent=s.site==='Instagram Reels'?'instagram.com/reels/example':'youtube.com/shorts/example';document.getElementById('demoFeedLabel').textContent=s.site==='Instagram Reels'?'Reels':'Shorts';ideas=s.customIdea?[s.customIdea,...fallbackIdeas]:[...fallbackIdeas];ideaIndex=0;showOverlay();});
+document.getElementById('demoAnother').addEventListener('click',()=>{ideaIndex=(ideaIndex+1)%ideas.length;document.getElementById('demoIdea').textContent=ideas[ideaIndex];});
+document.getElementById('demoLeave').addEventListener('click',()=>{overlay.hidden=true;countdown.hidden=true;finished.hidden=false;});
+document.getElementById('demoReset').addEventListener('click',()=>{finished.hidden=true;overlay.hidden=true;countdown.hidden=true;emptyState.hidden=false;formStatus.textContent='Change any setting above, then trigger the example again.';window.scrollTo({top:0,behavior:'smooth'});});
+</script>
+<script src="{{ url_for('static', filename='theme.js') }}"></script>
+</body>
+</html>
